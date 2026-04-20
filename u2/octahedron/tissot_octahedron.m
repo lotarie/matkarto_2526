@@ -33,9 +33,8 @@ vn_local = 0;
 [xs, ys] = gnom(R, un_local, vn_local);
 
 %Calculate distortion scale factors (a and b)
-c = pi/2 - un_local;
-a = 1 / (cos(c)^2);  
-b = 1 / cos(c);     
+a = 1 / (sin(un_local))^2;  
+b = 1 / sin(un_local);    
 
 
 visual_radius = R / 12; 
