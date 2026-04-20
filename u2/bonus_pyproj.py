@@ -2,11 +2,11 @@ from pyproj import Proj
 import math
 
 #define projection parameters for gnomonic projection
-p = Proj(proj='gnom', lat_0=0, lon_0=0, R=6380000)  
+p = Proj(proj='gnom', lat_0=35.2644, lon_0=45, R=6380000)  
 
 #coordinates of point Q (replace with actual coordinates)
-lon_Q = 15.0  
-lat_Q = 10.0 
+lon_Q = 45
+lat_Q = 0
 
 #factors of distortion at point Q
 factors = p.get_factors(lon_Q, lat_Q)
@@ -29,3 +29,6 @@ print(f"delta omega: {factors.angular_distortion:.6f}°")
 
 #P
 print(f"P: {factors.areal_scale:.6f}")
+
+#meridian convergence 
+print(f"meridian convergence: {factors.meridian_convergence:.6f}°")
