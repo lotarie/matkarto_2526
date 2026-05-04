@@ -1,0 +1,52 @@
+\section{Zadání}
+Pro zvolenou dvojici států provnejte hodnoty délkového zkreslení u následujících kartografických zobrazení:
+\begin{itemize}
+    \item Konformní válcové zobrazení se dvěma nezkreslenými rovnoběžkami (Mercartovo zobrazení)
+    \begin{align*}
+x &= R \cdot \cos(u_0)\cos(v) \\
+y &= R \cdot \ln\tan(\frac{u}{2}+45^\circ).
+    \end{align*}
+\item Konformní kuželové zobrazení se dvěma nezkreslenými rovnoběžkami (Lambertovo zobrazení)
+    \begin{align*}
+\rho &= \rho_0 \cdot \left(\frac{\tan(\frac{u_o}{2}+45^\circ)}{\tan(\frac{u}{2}+45^\circ)}\right) \\
+\epsilon &= n \cdot v.
+    \end{align*}
+\item Konformní azimutální zobrazení (Stereografická projekce)
+    \begin{align*}
+\rho &= 2R \cdot \tan \left(\frac{90^\circ-u}{2}\right) \\
+\epsilon &=  v.
+    \end{align*}
+\end{itemize}
+
+Kartografická zobrazení pro každý stát navrhněte v obecné poloze, parametry potřebné pro výpočet odvoďte z vhodného mapového pokladu. 
+
+Pro navrhovaná území volte dvě nezkreslené rovnoběžky tak, aby ve středu i na okraji zájmového území byly stejné absolutní hodnoty délkového zkreslení: $m_r^s = m_r^j = 1 +v$, $m_r^r = 1 -v$.
+
+V závěru proveďte diskuzi nad dosaženými hodnotami, pokuste se tyto výsledky zobecnit a rozhodnout, které zobrazení je pro každý ze států nejvhodnější.
+Úhlové výpočty proveďte s přesností na minuty, výpočty zkreslení na 6 desetinných míst.
+
+\noindent
+\begin{tabularx}{\textwidth}{|X|c|}
+    \hline
+    \textbf{Krok} & \textbf{Hodnocení} \\
+    \hline\hline
+    {Srovnání kartogrfikckých zobrazení pro vybrané územní celky.} \cellcolor[HTML]{94F29E} & 20b \\
+    \hline
+    \textit{Exaktní výpočet dotykové rovnoběžky (válcové zobrazení).} \cellcolor[HTML]{94F29E} & \textit{+5b} \\
+    \hline
+    \textit{Kartografický pól s využitím analytické geometrie (válcové zobrazení).} \cellcolor[HTML]{94F29E} & \textit{+10b} \\
+    \hline
+    \textit{Kartografický pól s využitím analytické geometrie (kuželové zobrazení).} \cellcolor[HTML]{94F29E} & \textit{+15b} \\
+    \hline
+    \textit{Kartografický pól jako střed opsané kružnice s min. poloměrem (azimutální zobrazení).} \cellcolor[HTML]{94F29E} & \textit{+10b} \\
+    \hline
+    \textit{Ekvideformáty délkového zkreslení s vhodně zvoleným krokem.}  & \textit{+x $\cdot$5 b} \\
+    \hline
+    \textbf{Max celkem:} & \textbf{75b} \\
+    \hline
+    
+\end{tabularx}
+
+\textit{Splněno \textbf{60 b} + \textbf{10 b} LaTeX.}
+
+
