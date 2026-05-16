@@ -1,0 +1,79 @@
+\section*{Zadání}
+Na základě globálních variačních kritérií proved'te zhodnocení níže uvedených zobrazení a rozhodněte o jejich vhodnosti (či nevhodnosti) pro mapy velkých územních celků. 
+
+\textbf{Přehled lokálních variačních kritérií v bodě $P=[u,v]$:}
+
+\begin{itemize}
+	\item \textbf{Airyho kritérium:} 
+	\begin{equation*}
+		h^{2}(u,v)=\frac{(a-1)^{2}+(b-1)^{2}}{2} 
+	\end{equation*}
+	\item \textbf{Komplexní kritérium:}
+	\begin{equation*}
+		h^{2}(u,v)=\frac{|a-1|+|b-1|}{2}+\frac{a}{b}-1 
+	\end{equation*}
+\end{itemize}
+
+Pro kartografická zobrazení volená v normální poloze spočtěte hodnoty lokálních kritérií $h^{2}(u,v)$ v uzlových bodech geografické sítě pokrývajících zadané území a jeho nejbližší okolí s kroky $\Delta u=\Delta v=10^{\circ}$ (resp. s polovičním krokem, je-li třeba), území by mělo být pokryto alespoň 30 uzlovými body.
+ Při výpočtu využijte osové symetrie geografické sítě dle rovníku či základního poledníku. 
+
+Z hodnot lokálních kritérií $h^{2}(u,v)$ v uzlových bodech určete pro každé kartografické zobrazení hodnoty globálních kritérií.
+ Globální variační kritérium $H^{2}$  nahrad'te diskrétními vztahy, uvažujte neváženou i váženou variantu, kde váha je $p_{i}=\cos u_{i}$. 
+
+\begin{equation*}
+	H^{2}=\frac{1}{(u_{2}-u_{1})(v_{2}-v_{1})}\int_{u_{1}}^{u_{2}}\int_{v_{1}}^{v_{2}}h^{2}\cos u \, du \, dv 
+\end{equation*}
+
+\begin{equation*}
+	H_{1}^{2}=\frac{1}{n}\sum_{i=1}^{n}h^{2}(u_{i},v_{i}), \quad H_{2}^{2}=\frac{\sum_{i=1}^{n}p_{i}h^{2}(u_{i},v_{i})}{\sum_{i=1}^{n}p_{i}} 
+\end{equation*}
+
+\textbf{Přehled analyzovaných kartografických zobrazení:}
+\begin{itemize}
+	\item Bonneovo, 
+	\item Mercator-Sansonovo, 
+	\item Eckertovo V., 
+	\item Winkel-Tripel, 
+	\item Hammer-Aitoffovo. 
+\end{itemize}
+
+V uzlových bodech geografické sítě vypočtěte měřítkové číslo $M(u,v)$ mapy jako funkci polohy: 
+\begin{equation*}
+	M(u,v)=\frac{M}{\max_{\forall A}m(u,v,A)}=\frac{M}{a(u,v)} 
+\end{equation*}
+Vygenerujte také jeho izočáry. 
+Výchozí hodnotu měřítkového čísla volte pro formát A4, pro mapu planisféry např. $M=100\,000\,000$.
+Výpočty proved'te na jednotkové kouli, zeměpisnou šířku $u_{0}$ nezkreslené rovnoběžky volte tak, aby procházela (stejně jako základní poledník $v_{0}$) středem zobrazovaného území. 
+
+V přehledných tabulkách uved'te hodnoty globálních kritérií a rozhodněte, které z kartografických zobrazení je nejvhodnější pro znázornění zvoleného územního celku. 
+ V závěru také zhodnot'te, jaké variační kritérium dle Vašeho názoru lépe vystihuje vlastnosti kartografického zobrazení.
+
+
+
+\noindent
+\begin{tabularx}{\textwidth}{|X|c|}
+    \hline
+    \textbf{Krok} & \textbf{Hodnocení} \\
+    \hline\hline
+    {Hodnocení kartografických zobrazení s využitím variačních kritérií.} \cellcolor[HTML]{94F29E} & 20b \\
+    \hline
+    \textit{Vážená varianta kritérií.} \cellcolor[HTML]{94F29E} & \textit{+5b} \\
+    \hline
+    \textit{Analýza velikosti kroků $\Delta u, \Delta v$ na hodnoty kritérií.}  & \textit{+10b} \\
+    \hline
+    \textit{Jaké procento území má zkreslení úhlů menší než 50\%.} & \textit{+10b} \\
+    \hline
+    \textit{Jaké procento území má změnu M menší než 50\%.}  \cellcolor[HTML]{94F29E} & \textit{+10b} \\
+    \hline
+    \textit{Další hodnocené kartografické zobrazení (max. +3)}  & \textit{+3 $\cdot$5 b} \\
+    \hline
+    \textbf{Max celkem:} & \textbf{70b} \\
+    \hline
+    
+\end{tabularx}
+
+\textit{Celkem zpracováno \textbf{35 b.} + \textbf{10 b.} za LaTeX.}
+
+
+
+
