@@ -1,0 +1,90 @@
+\section{Zadání}
+GPS aparaturou změřte zeměpisné souřadnice bodů $\varphi, \lambda$ bodů $P_1, P_2$ vztažené k elipsoidu WGS-84 a vypočtěte jejich obraz v rovině Křovákova zobrazení. Měření proveďte na bodech o známých souřadnicích (trigonometrický bod), a to opakovaně.
+
+Pro transformaci mezi elipsoidy použijte sedmiprvkovou Helmertovu prostorovou podobnostní transformaci danou vztahem
+
+\[
+\begin{pmatrix}
+X \\
+Y \\
+Z
+\end{pmatrix}
+=
+m
+\begin{pmatrix}
+1 & \omega_z & -\omega_y \\
+-\omega_z & 1 & \omega_x \\
+\omega_y & -\omega_x & 1
+\end{pmatrix}
+\begin{pmatrix}
+X' \\
+Y' \\
+Z'
+\end{pmatrix}
++
+\begin{pmatrix}
+\Delta X \\
+\Delta Y \\
+\Delta Z
+\end{pmatrix}.
+\]
+
+Parametry prostorové transformace:
+
+\[
+\begin{array}{|c|c|}
+\hline
+\omega_x & 4.9984'' \\
+\hline
+\omega_y & 1.5867'' \\
+\hline
+\omega_z & 5.2611'' \\
+\hline
+m - 1 & -3.5623 \times 10^{-6} \\
+\hline
+\Delta X & -570.8285 \ \mathrm{m} \\
+\hline
+\Delta Y & -85.6769 \ \mathrm{m} \\
+\hline
+\Delta Z & -462.8420 \ \mathrm{m} \\
+\hline
+\end{array}
+\]
+
+Určení zeměpisné šířky $\varphi$ obrazu bodu $P$ na Besselově elipsoidu proveďte s přesností $0.001''$. Souřadnice obrazu bodu $P$ v rovině Křovákova zobrazení určete s přesností na cm. V bodech $P_1, P_2$ dále vypočtěte hodnoty délkového zkreslení $m - 1$.
+
+\begin{itemize}
+    \item hodnoty délkového zkreslení $m - 1$,
+    \item hodnoty meridiánové konvergence $c$.
+\end{itemize}
+
+Volitelně porovnejte účinek zanedbání změny/vlivu elipsoidu na souřadnice bodů $P_1, P_2$ a na vzdálenosti $\|P_1 - P_2\|$. Jak se budou lišit takto určené souřadnice a vzdálenosti od hodnot vztažených k elipsoidu WGS-84?
+
+Obrazy bodů $P_1, P_2$ a jejich blízkého okolí vizualizujte s použitím vhodných podkladových geografických dat (např. WMS). Výpočty realizujte v SW Matlab.
+
+\section*{Hodnocení}
+
+\begin{table}[b]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Krok} & \textbf{Hodnocení} \\
+\hline
+Výpočet souřadnic bodu v rovině Křovákova zobrazení + zkreslení. \cellcolor{green} & 20b \cellcolor{green} \\
+\hline
+\textit{Výpočet meridiánové konvergence} \cellcolor{green} & +5b \cellcolor{green} \\
+\hline
+\textit{Zanedbání změny elipsoidu: souřadnice $\varphi, \lambda$ měřeny na Besselově elipsoidu,} & +5b \\
+\hline
+\textit{Zanedbání vlivu elipsoidu: souřadnice měřeny na Gaussově kouli.} & +5b \\
+\hline
+\textit{Transformace $(\varphi, \lambda, H) \rightarrow (Y, X, Z).$} \cellcolor{green} & +10b \cellcolor{green}\\
+\hline
+\textit{Použití dotransformace (přesnost 2cm)} & +15b \\
+\hline
+\textbf{Max celkem:} & \textbf{60b} \\
+\hline
+\end{tabular}
+\end{table}
+
+
