@@ -96,11 +96,73 @@ Níže je vyobrazen fragment kódu, který shapefile načítá a extrahuje jedno
             all_points.extend(shape_record.shape.points)
 \end{lstlisting}
 
+\newpage
+Na obrázcích~\ref{ob_nemecko} až~\ref{ob_japost} jsou vyobrazeny vybraná zájmová území.
+V rámci práce je analyzováno Japonsko jak včetně jižních ostroů, tak i bez nich.
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{figure/nem.png}
+	\captionsetup{justification=centering}
+	\caption{Zájmové území - Německo.}
+	\label{ob_nemecko}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}{0.45\textwidth}
+	\centering
+	\includegraphics[scale=0.4]{figure/jap_ml.png}
+	\captionsetup{justification=centering}
+	\caption{Bez ostrovů.}
+	\label{ob_japml}
+	\end{subfigure}
+	\hfill 
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/jap_ost.png}
+		\captionsetup{justification=centering}
+		\caption{S ostrovy.}
+		\label{ob_japost}
+	\end{subfigure}
+	
+	
+	\label{fig:three_images}
+	\caption{Zájmové území - Japonsko.}
+\end{figure}
+
+
+
 \subsection{Válcové konformní zobrazení}
 V rámci válcového konformního zobrazení byla exaktně spočtena dotyková rovnoběžka a pomocí analytické geometrie byl určen kartografický pól. 
 
 \subsubsection*{Kartografický pól s využitím analytické geometrie}
-Pro dosažení co nejnižšího maximálního zkreslení ve válcovém zobrazení musí být kartografický pól navržen tak, aby transformovaný kartografický rovník procházel nejdelší osou zadaného území. K nalezení této osy byl navržen algoritmus, který zkoumá vzdálenosti všech dvojic bodů tvořících tvar státu. 
+Pro dosažení co nejnižšího maximálního zkreslení ve válcovém zobrazení musí být kartografický pól navržen tak, aby transformovaný kartografický rovník procházel nejdelší osou zadaného území. K nalezení této osy byl navržen algoritmus, který zkoumá vzdálenosti všech dvojic bodů tvořících tvar státu. Vizualizace je znázorněna na obrázku~\ref{ob_3d_viz}, který se váže i ke kartografickému pólu u kuželového zobrazení.
+
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/3Dviz.png}
+		\captionsetup{justification=centering}
+		\label{3dviz1}
+	\end{subfigure}
+	\hfill 
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/3dviz2.png}
+		\captionsetup{justification=centering}
+		\label{3dviz2}
+	\end{subfigure}
+	
+	
+	\label{fig3dviz}
+	\caption{Vizualizace výpočtu kartografického pólu na sféře.}
+\end{figure}
 
 Geografické souřadnice bodů byly nejprve převedeny do 3D kartézské soustavy na jednotkové referenční kouli ($R = 1$) pomocí vztahů:
 $$ X = \cos u \cos v, \quad Y = \cos u \sin v, \quad Z = \sin u. $$
@@ -131,6 +193,8 @@ N_G = cross([XN2-XN1, YN2-YN1, ZN2-ZN1], [XN1, YN1, ZN1])
 # Normalizace vektoru
 n_G = N_G / linalg.norm(N_G)
 \end{lstlisting}
+
+
 
 Po zisku normalizovaného vektoru $\vec{n} = (n_x, n_y, n_z)$ je finálním krokem zpětná konverze do sférických úhlů (geografických souřadnic pólu $u_k, v_k$), čímž získáme přesnou polohu pólu bez nutnosti grafického odhadování v GIS softwaru:
 $$ u_k = \arcsin(n_z), \quad v_k = \text{atan2}(n_y, n_x). $$
@@ -168,7 +232,7 @@ def calculate_standard_parallel(s_max_rad):
 \end{lstlisting}
 
 \subsubsection*{Výsledky}
-V tabulkách~\ref{table:1} až~\ref{table:3}  jsou vypsány souřadnice kartografického pólu a jednotlivých bodů:
+V tabulkách~\ref{table:1} až~\ref{table:3}  jsou vypsány souřadnice kartografického pólu a jednotlivých bodů a na obrázku~\ref{fig_body_merc} jsou body vizualizovány.
     \begin{table}[h!]
         \centering
         \begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|} 
@@ -197,15 +261,15 @@ V tabulkách~\ref{table:1} až~\ref{table:3}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &   -54.281256  & 105.791691 \\
+            Pól  &   -31.881279  & -161.972627 \\
             \hline
-            $P_1$   &  33.339523 &  129.602363 \\
+            $P_1$   &  31.282785 & 130.232343 \\
             \hline
-            $P_2$   &  19.269814 & 166.701270\\
+            $P_2$   &  44.187259 & 145.226839\\
             \hline
-            $P_3$   &  31.063241 & 130.742429 \\
+            $P_3$   &  35.198779 & 140.375467 \\
             \hline
-            $P_4$   &  45.459198 & 141.866284 \\
+            $P_4$   &  45.402201 & 141.700329 \\
             \hline
         \end{tabular}
         \caption{Souřadnice bodů a pólu [$^\circ$] pro Japonsko (bez jižních ostrovů).}
@@ -218,26 +282,74 @@ V tabulkách~\ref{table:1} až~\ref{table:3}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &   65.493639  & -53.221546 \\
+            Pól  &   33.309416  & 15.529672 \\
             \hline
-            $P_1$   &  19.269814 &  166.701270 \\
+            $P_1$   &  44.187259 &  145.226839 \\
             \hline
             $P_2$   &  24.457313 & 122.919561 \\
             \hline
-            $P_3$   &  45.459198 & 141.866284 \\
+            $P_3$   &  45.447871 & 141.002785 \\
             \hline
-            $P_4$   &  20.380988 & 136.040071 \\
+            $P_4$   &  24.752543 & 141.355133 \\
             \hline
         \end{tabular}
         \caption{Souřadnice bodů a pólu [$^\circ$] pro Japonsko.}
 \label{table:3}
     \end{table}
 
+\begin{figure}[htbp]
+	\centering
+	
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/merc_jap_ml.png}
+		\captionsetup{justification=centering}
+		\label{merc_jap1}
+	\end{subfigure}
+	\hfill 
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/merc_jap_ost.png}
+		\captionsetup{justification=centering}
+		\label{mer_jap2}
+	\end{subfigure}
+	
+	\vspace{1em} 
+	
+		\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[scale=0.4]{figure/merc_nem.png}
+		\captionsetup{justification=centering}
+		\label{mer_nem}
+	\end{subfigure}
+	
+	\caption{Vizualizované body získané pomocí analytického výpočtu.}
+	\label{fig_body_merc}
+\end{figure}
+
 \newpage
 \textbf{Zhodnocení zkreslení} \\
-Vypočtené hodnoty délkového zkreslení $\nu$ poukazují na geometrické limity tohoto zobrazení. Zatímco u kompaktního území Německa se maximální hodnoty zkreslení na severním okraji ($0,325$), jižním okraji ($0,878$) a kartografickém rovníku ($-0,878$) drží v přijatelných symetrických mezích, u Japonska se projevuje výrazná asymetrie. 
+Vypočtené hodnoty délkového zkreslení $\nu$ (tabulka~\ref{tab_vsechna_zkresleni_valec}) poukazují na geometrické limity tohoto zobrazení. Zatímco u kompaktního území Německa se maximální hodnoty zkreslení na severním okraji ($0,325$), jižním okraji ($0,878$) a kartografickém rovníku ($-0,878$) drží v přijatelných symetrických mezích, u Japonska se projevuje výrazná asymetrie. 
 
-Pro pevninské Japonsko dosahuje zkreslení na jižním okraji hodnoty $31,859$ oproti $0,297$ na okraji severním. Při zahrnutí jižních ostrovů se tato asymetrie překlápí a extrémně narůstá – severní okraj vykazuje zkreslení $74,095$, zatímco jižní pouze $1,120$. 
+Pro pevninské Japonsko dosahuje zkreslení na jižním okraji hodnoty $-0,083$ oproti $1,119$ na okraji severním. Při zahrnutí jižních ostrovů se tato asymetrie překlápí a extrémně narůstá – severní okraj vykazuje zkreslení $23,112$, zatímco jižní pouze $0,653$. 
+
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1,3}
+	\begin{tabular}{|l|c|c|c|c|
+		}
+		\hline
+		\textbf{Území} & \textbf{K. rovník - P1} & \textbf{K. rovník - P2} & \textbf{Severní b. - P3} & \textbf{Jižní b. - P4} \\ \hline\hline
+		Německo & $-0.878373$ & $-0.878373$ & $0.325416$ & $0.878373$ \\ \hline
+		
+		Japonsko & $-1.1191$ & $-1.1191$ & $1.1191$ & $-0.083017$ \\ \hline
+		
+		Japonsko (s ostrovy) & $-0.653502$ & $-0.653502$ & $23.11221$ & $0.653502$ \\ \hline
+	\end{tabular}
+	\vspace{0.2cm}
+	\caption{Kompletní hodnoty délkového zkreslení $\nu \cdot 1000$ pro válcové zobrazení v obecné poloze.}
+	\label{tab_vsechna_zkresleni_valec}
+\end{table}
 
     
 \subsection{Kuželové konformní zobrazení}
@@ -322,11 +434,11 @@ V tabulkách~\ref{table:4} až~\ref{table:6}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &    28.747167  & 149.983177 \\
+            Pól  &    35.566533  & 140.539445 \\
             \hline
-            $P_1$   &  35.198779 &  140.375467 \\
+            $P_1$   &  35.559823 &  140.485875 \\
             \hline
-            $P_2$   &  33.230916 & 129.576257\\
+            $P_2$   &  45.459198 & 141.866284\\
             \hline
          
         \end{tabular}
@@ -342,11 +454,11 @@ V tabulkách~\ref{table:4} až~\ref{table:6}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &   25.213941  &  145.466147 \\
+            Pól  &   33.329096  &  134.931626 \\
             \hline
-            $P_1$   &  27.027972 &  142.239838 \\
+            $P_1$   &  33.561336 &  135.441367 \\
             \hline
-            $P_2$   &  45.447871 & 141.002785 \\
+            $P_2$   &  24.457313 & 122.919561 \\
             \hline
     
         \end{tabular}
@@ -355,12 +467,27 @@ V tabulkách~\ref{table:4} až~\ref{table:6}  jsou vypsány souřadnice kartogra
     \end{table}
 \newpage
 \textbf{Zhodnocení zkreslení} \\
-Získané hodnoty zkreslení $\nu$  plně reflektují úspěšné splnění zadané podmínky symetrie, kdy se zkreslení na obou okrajových rovnoběžkách i ve středové rovnoběžce pásu liší pouze znaménkem ($m_r^s = m_r^j = 1 + \nu, m_r^0 = 1 - \nu$). Toto zobrazení vykazuje nejnižší celkové zkreslení ze všech tří testovaných variant. 
+Získané hodnoty zkreslení $\nu$  plně reflektují úspěšné splnění zadané podmínky symetrie, kdy se zkreslení na obou okrajových rovnoběžkách i ve středové rovnoběžce pásu liší pouze znaménkem ($m_r^s = m_r^j = 1 + \nu, m_r^0 = 1 - \nu$) (tabulka~\ref{tab_vsechna_zkresleni_kuzel}). Toto zobrazení vykazuje nejnižší celkové zkreslení ze všech tří testovaných variant. 
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}{|l|c|c|c|}
+		\hline
+		\textbf{Zájmové území} & \textbf{Sev. okraj ($\nu_1$)} & \textbf{Již. okraj ($\nu_2$)} & \textbf{Střed ($\nu_0$)} \\ \hline\hline
+		Německo & $0.354088$ & $0.354088$ & $-0.354088$ \\ \hline
+		Japonsko  & $2.592034$ & $2.592034$ & $-2.592034$ \\ \hline
+		Japonsko (včetně již. ostrovů) & $4.080372$ & $4.0803721$ & $-4.080372$ \\ \hline
+	\end{tabular}
+	\vspace{0.2cm}
+	\caption{Kompletní hodnoty délkového zkreslení $\nu \cdot 1000$ pro kuželové zobrazení v obecné poloze.}
+	\label{tab_vsechna_zkresleni_kuzel}
+\end{table}
 
-Pro Německo je maximální zkreslení $\nu_{max}$ symetricky rozloženo na hodnotách  $\pm 0,354087$. Pro pevninské Japonsko činí odchylka pouhých $\pm 1,121$ a ani po přidání všech vzdálených jižních ostrovů nepřesahuje $\pm 6,046$. To ukazuje, že vhodně orientovaný kužel protínající referenční plochu dokáže ideálně optimalizovat i velice protáhlé a asymetrické tvary států.
+
+Pro Německo je maximální zkreslení $\nu_{max}$ symetricky rozloženo na hodnotách  $\pm 0,354087$. Pro pevninské Japonsko činí odchylka $\pm 2,592$ a ani po přidání všech vzdálených jižních ostrovů nepřesahuje $\pm 4,080$. To ukazuje, že vhodně orientovaný kužel protínající referenční plochu dokáže ideálně optimalizovat i velice protáhlé a asymetrické tvary států.
 
 \subsection{Azimutální konformní zobrazení}
-V rámci azimutálního konformního zobrazení byl kartografický pól určen jako střed opsané kružnice s minimálním poloměrem. 
+V rámci azimutálního konformního zobrazení byl kartografický pól určen jako střed opsané kružnice s minimálním poloměrem. Na obrázcích~\ref{ob5_nem} až~\ref{ob7japmainland} jsou znázorněny výsledné opsané kružnice pro vybraná území.
 
 
 \subsubsection*{Kartografický pól jako střed opsané kružnice}
@@ -407,7 +534,29 @@ Výsledný kartografický pól $[u_k, v_k]$ je středem té kružnice, která pr
 \label{ob4}
 \end{figure}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figure/nemecko.png}
+	\captionsetup{justification=centering}
+	\caption{Výsledná opsaná kružnice pro Německo.}
+	\label{ob5_nem}
+\end{figure}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figure/jap_ostrovy.png}
+	\captionsetup{justification=centering}
+	\caption{Výsledná opsaná kružnice pro Japonsko s ostrovy.}
+	\label{ob6japost}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{figure/jap_mainland.png}
+	\captionsetup{justification=centering}
+	\caption{Výsledná opsaná kružnice pro Japonsko bez ostrovů.}
+	\label{ob7japmainland}
+\end{figure}
 
 
 \subsubsection*{Výsledky}
@@ -436,9 +585,9 @@ V tabulkách~\ref{table:7} až~\ref{table:9}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &   26.688015  & 148.297200 \\
+            Pól  &   37.735022  & 137.729591 \\
             \hline
-            $P_1$   &  45.459198 &  141.866284 \\
+            $P_1$   &  31.282785 &  130.232343 \\
             \hline
 
          
@@ -455,9 +604,9 @@ V tabulkách~\ref{table:7} až~\ref{table:9}  jsou vypsány souřadnice kartogra
          \hline
             Bod & \textit{u}  & \textit{v} \\
             \hline
-            Pól  &   23.696010  & 145.027534 \\
+            Pól  &   34.322286  & 134.073200 \\
             \hline
-            $P_1$   &  45.447871 &  141.002785 \\
+            $P_1$   &  20.385735 &  136.144975 \\
             \hline
 
     
@@ -467,9 +616,26 @@ V tabulkách~\ref{table:7} až~\ref{table:9}  jsou vypsány souřadnice kartogra
     \end{table}
 
 \textbf{Zhodnocení zkreslení} \\
-Vypočtené hodnoty $\nu$  ukazují, že i v rámci azimutálního zobrazení se podařilo exaktně dodržet optimalizační požadavek – odchylka v pólu a na omezující kružnici opsané se liší výhradně znaménkem. Území s nulovým zkreslením v tomto případě tvoří standardní kružnici ležící mezi pólem a hranicí zobrazení.
+Vypočtené hodnoty $\nu$  ukazují (tabulka~\ref{tab_vsechna_zkresleni_azimut}), že i v rámci azimutálního zobrazení se podařilo exaktně dodržet optimalizační požadavek – odchylka v pólu a na omezující kružnici opsané se liší výhradně znaménkem. Území s nulovým zkreslením v tomto případě tvoří standardní kružnici ležící mezi pólem a hranicí zobrazení.
 
-U sféricky kompaktního Německa je maximální zkreslení na okraji nepatrné ($\nu_1 = 0,632$) a zcela vyvažuje kompresi ve středu mapy ($\nu_2 = -0,632$). U Japonska, vlivem značné polohové vzdálenosti nejzazších bodů od vypočteného středu opsané kružnice, zkreslení logicky a výrazně narůstá. Pro pevninskou část dosahuje symetrických $\pm 14,490$ a po zahrnutí odlehlých ostrovů stoupá poloměr opsané kružnice natolik, že zkreslení dosáhne $\pm 18,533$.
+\begin{table}[h!]
+	\centering
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}{|l|c|c|c|}
+		\hline
+		\textbf{Zájmové území} & \textbf{Omezující kružnice} & \textbf{Kart. pól} & \textbf{Nezkreslený kruh} \\ \hline\hline
+		Německo & $0.632640$ & $-0.632640$ & $0.000000$ \\ \hline
+		Japonsko & $3.037212$ & $-3.037212$ & $0.000000$ \\ \hline
+		Japonsko (včetně již. ostrovů) & $7.542212 $ & $-7.542212$ & $0.000000$ \\ \hline
+	\end{tabular}
+	\vspace{0.2cm}
+	\caption{Kompletní hodnoty délkového zkreslení $\nu \cdot 1000$ pro azimutální zobrazení v obecné poloze.}
+	\label{tab_vsechna_zkresleni_azimut}
+\end{table}
+
+
+
+U sféricky kompaktního Německa je maximální zkreslení na okraji nepatrné ($\nu_1 = 0,632$) a zcela vyvažuje kompresi ve středu mapy ($\nu_2 = -0,632$). U Japonska, vlivem značné polohové vzdálenosti nejzazších bodů od vypočteného středu opsané kružnice, zkreslení logicky a výrazně narůstá. Pro pevninskou část dosahuje symetrických $\pm 3,037$ a po zahrnutí odlehlých ostrovů stoupá poloměr opsané kružnice natolik, že zkreslení dosáhne $\pm 7,542$.
 
 
 
@@ -484,5 +650,8 @@ Na základě diskutovaných hodnot z jednotlivých podkapitol lze zobecnit násl
     Díky kompaktnímu, téměř kruhovému tvaru tohoto státu jsou aplikovatelná všechna tři zobrazení. Ve všech případech se maximální deformace drží pod  hodnotou $1 \cdot 10^{-3}$. Pokud bychom však měli zvolit nejlepší zobrazení, je jím \textbf{konformní kuželové zobrazení v obecné poloze}, které poskytlo nejmenší celkové zkreslení ($\pm 0,354 \cdot 10^{-3}$).
     
     \item \textbf{Pro území s dominantním směrem (Japonsko):} 
-    Pro tento asymetrický, podélně orientovaný tvar rozprostírající se přes velkou oblast je jednoznačně nejvhodnější volbou \textbf{konformní kuželové zobrazení v obecné poloze}. To jako jediné spolehlivě pojalo i okrajové jižní ostrovy, perfektně dodrželo zadáním vyžadovanou symetrii extrémů zkreslení ($m_r^s = m_r^j = 1 + \nu, m_r^0 = 1 - \nu$) a udrželo celkové deformace na  $\pm 6,046 \cdot 10^{-3}$. Válcové zobrazení u asymetrických částí naprosto selhalo v udržení symetrických odchylek na okrajích a azimutální zobrazení generovalo zbytečně obrovskou opsanou kružnici, čímž neefektivně maximalizovalo chybu na $\pm 18,533 \cdot 10^{-3}$.
+    Pro hlavní pevninskou část Japonska se jako nejlepší zobrazení jeví \textbf{konformní válcové zobrazení v obecné poloze}, kde maximální zkreslení na jižním bodu je $-0,083 \cdot 10^{-3}$ a na severním bodu $1,119 \cdot 10^{-3}$.
+    
+    Pro Japonsko i s odlehlými ostrovy se jako nejlepší volba jeví \textbf{konformní kuželové zobrazení v obecné poloze}, kde maximální zkreslení dosahuje hodnot $4,080 \cdot 10^{-3}$.
+  	Azimutální zobrazení generovalo zbytečně obrovskou opsanou kružnici, čímž neefektivně maximalizovalo chybu na $\pm 3,037 \cdot 10^{-3}$ a $\pm 7,542 \cdot 10^{-3}$.
 \end{itemize}
