@@ -1,0 +1,120 @@
+\section*{Úvod}
+Tato zpráva se zabývá problematikou exaktního převodu zeměpisných souřadnic z globálního referenčního systému WGS84 do národního polohového systému S-JTSK (systém jednotné trigonometrické sítě katastrální) v jeho plnohodnotné 3D variantě. Cílem úlohy je realizovat kompletní transformační řetězec zahrnující přechod mezi nestejnorodými referenčními elipsoidy a následné kartografické zobrazení tělesa na rovinné souřadnice.
+
+V rámci zpracování je kladen důraz především na zhodnocení vlivu třetího rozměru (elipsoidické výšky $H$) na přesnost prostorové transformace a na exaktní analytický výpočet meridiánové konvergence jakožto klíčové deformační charakteristiky Křovákova zobrazení. 
+
+Veškeré výpočty byly realizovány v programovacím jazyce Python s využitím vlastního modulárního řešení, kde matematické operace šikmého zobrazení zajišťuje externí uživatelská knihovna \lstinline|uvtosd|.
+
+\newpage
+\section*{Teorie ke zpracování}  
+Základním principem transformace mezi globálními a lokálními geodetickými systémy je matematická nestejnorodost referenčních ploch. Globální systém WGS84 využívá geocentrický elipsoid, který aproximuje celosvětový průběh geoidu, zatímco národní systém S-JTSK je definován na lokálním Besselově elipsoidu, jehož parametry jsou optimalizovány pro území střední Evropy.
+
+Převod bodu ze systému WGS84 $(\varphi, \lambda, H)$ do roviny Křovákova zobrazení $(Y, X)$ a zpětný výpočet výšky nad Besselovým elipsoidem vyžaduje vícestupňový matematický aparát. Zahrnuje převod zeměpisných souřadnic na prostorové geocentrické souřadnice $(X, Y, Z)$, následnou sedmiprvkovou Helmertovu prostorovou podobnostní transformaci a zpětný převod na zeměpisné souřadnice cílového elipsoidu.
+
+Vlastní kartografické zobrazení je definováno jako konformní kuželové zobrazení v obecné poloze. Využívá se mezilehlá referenční plocha Gaussova koule. Transformační řetězec se proto dále skládá z dvojstupňového zobrazení z elipsoidu na kouli (Gaussovo konformní zobrazení) a z koule do roviny (Lambertovo zobrazení).
+
+Jednou z klíčových deformačních charakteristik v rovině zobrazení je meridiánová konvergence ($c$). Jedná se o úhel, který svírá obraz místního zeměpisného poledníku s přímkou rovnoběžnou s osou $X$ v mapové soustavě. V praxi to znamená, že směr geografického severu na mapě neodpovídá přesně svislému směru souřadnicové sítě.
+
+Tento rozdíl je potřeba při přesnějších geodetických výpočtech zohlednit, protože jinak by docházelo k systematickým odchylkám v orientaci. Vyjádření tohoto jevu se provádí pomocí nástrojů sférické trigonometrie.
+
+\newpage
+\section*{Zpracování a algoritmická implementace}
+Vlastní zpracování úlohy bylo realizováno formou uceleného výpočetního workflow v programovacím jazyce Python. Skript je navržen lineárně s implementovaným uživatelským rozhraním v terminálu a skládá se z následujících po sobě jdoucích fází.
+
+\subsection*{1. Uživatelské rozhraní a inicializace dat}
+Program na konci běhu spouští jednoduché interaktivní textové menu, které je založené na standardní funkci input. Uživatel si v něm může vybrat, jestli chce spustit automatický výpočet pro dva předdefinované trigonometrické body, nebo si zadá vlastní souřadnice ručně.
+
+Pokud je zvolená možnost manuálního zadání, program vstupy průběžně kontroluje a zároveň je převádí z desetinných stupňů na radiány, protože s nimi se pak ve výpočtech dál pracuje.
+
+\begin{lstlisting}[language=Python, caption={Řídicí struktura interaktivního výběru skriptu.}]
+print("Transformation of WGS84 to JTSK")
+print("1 - geodetic point Bi27-8")
+print("2 - geodetic point Bi5-21")
+print("3 - custom coordinates")
+choice = input("Choose the input coordinates (1, 2, or 3): ")
+\end{lstlisting}
+
+\subsection*{2. Výpočet prostorových geocentrických souřadnic WGS84}
+Po předání parametrů hlavní výpočetní funkci WGSToJTSK jsou vstupní zeměpisné souřadnice $(\varphi, \lambda)$ a elipsoidická výška $H_{WGS}$ transformovány na geocentrické souřadnice $(X, Y, Z)_{WGS}$. Pro správné určení prostorové polohy je výška $H_{WGS}$ zakomponována do všech tří prostorových os. Výpočet využívá velkou poloosu $a = 6378137,00\text{ m}$ a malou poloosu $b = 6356752,3142\text{ m}$.
+
+\begin{lstlisting}[language=Python, caption={Ukázka scriptu pro převod zadaných souřadnic do 3D}]
+e2_WGS = (a_WGS*a_WGS - b_WGS*b_WGS)/(a_WGS*a_WGS)
+W_WGS = sqrt(1-e2_WGS*(sin(phi_WGS))**2)
+N_WGS = a_WGS/W_WGS
+#XYZ coordinates, WGS 84, including height
+X_WGS = (N_WGS + H_WGS) * (cos(phi_WGS) * cos(la_WGS))
+Y_WGS = (N_WGS + H_WGS) * (cos(phi_WGS) * sin(la_WGS))
+Z_WGS = (N_WGS * (1 - e2_WGS) + H_WGS) * sin(phi_WGS)
+\end{lstlisting}
+
+
+\subsection*{3. Sedmiprvková Helmertova transformace}
+Přechod z geocentrického systému WGS84 do lokálního systému založeného na Besselově elipsoidu je řešen pomocí lineární podobnostní transformace. V praxi se používá zjednodušený tvar rotační matice, který vychází z Maclaurinova rozvoje pro malé úhly, protože rotační parametry jsou velmi malé a jejich přesná trigonometrická reprezentace by byla zbytečně komplikovaná.
+
+Transformační rovnice jsou ve skriptu implementovány v explicitní podobě a rotační úhly jsou předem převedeny z úhlových vteřin na radiány, aby s nimi bylo možné dále přímo počítat v rámci navazujících matematických výpočtů.
+\begin{align*}
+X_{Bes} &= m \cdot (X_{WGS} + Y_{WGS} \cdot \omega_z - \omega_y \cdot Z_{WGS}) + \Delta X \\
+Y_{Bes} &= m \cdot (-\omega_z \cdot X_{WGS} + Y_{WGS} + \omega_x \cdot Z_{WGS}) + \Delta Y \\
+Z_{Bes} &= m \cdot (\omega_y \cdot X_{WGS} - \omega_x \cdot Y_{WGS} + Z_{WGS}) + \Delta Z
+\end{align*}
+Skript operuje s těmito definovanými konstantami transformačního klíče:
+$$\Delta X = -570,8285\text{ m}, \quad \Delta Y = -85,6769\text{ m}, \quad \Delta Z = -462,8420\text{ m}$$
+$$\omega_x = 4,9984'', \quad \omega_y = 1,5867'', \quad \omega_z = 5,2611'', \quad m = 1 - 3,5623 \cdot 10^{-6}$$
+
+\subsection*{4. Výpočet zeměpisných souřadnic a výšky na Besselově elipsoidu}
+Z transformovaných prostorových souřadnic $X_{Bes}, Y_{Bes}, Z_{Bes}$ skript zpětně odvozuje zeměpisnou polohu na Besselově elipsoidu. Zeměpisná délka se určí přímo pomocí funkce arcuscosinus. Zeměpisná šířka je v algoritmu řešena pomocí přímého aproximačního vzorce, který poskytuje dostatečně přesný výsledek pro následné kartografické zobrazení.
+\begin{equation*}
+\lambda_{Bes} = \operatorname{atan2}(Y_{Bes}, X_{Bes}), \qquad \tan \varphi_{Bes} = \frac{Z_{Bes}}{(1 - e^2_{Bes})\sqrt{X_{Bes}^2 + Y_{Bes}^2}}
+\end{equation*}
+
+Bezprostředně poté algoritmus dopočítává elipsoidickou výšku nad Besselovým elipsoidem ($H_{Bes}$), která odpovídá výsledné vertikáln souřadnici. K jejímu určení se využívá průvodič v rovině rovníku $p$ a také příčný poloměr křivosti $N_{Bes}$, který se už odvíjí od právě spočtené zeměpisné šířky.
+
+Celý výpočet tedy vychází z předchozího určení polohy bodu na elipsoidu a následně z jeho geometrického vztahu vůči referenční ploše Besselova elipsoidu.
+\begin{equation*}
+N_{Bes} = \frac{a_{Bes}}{\sqrt{1 - e^2_{Bes}\sin^2\varphi_{Bes}}}, \qquad p = \sqrt{X_{Bes}^2 + Y_{Bes}^2} \quad \rightarrow \quad H_{Bes} = \frac{p}{\cos \varphi_{Bes}} - N_{Bes}
+\end{equation*}
+
+\subsection*{5. Kartografické zobrazení (Bessel $\rightarrow$ S-JTSK)}
+Proces Křovákova zobrazení je ve skriptu zahájen posunem zeměpisné délky vůči základnímu poledníku Ferro, tedy $\lambda_{Ferro} = \lambda_{Bes} + 17^\circ 40'$. Tento krok v podstatě jen přepíná souřadnice do historicky definovaného referenčního rámce, ve kterém je celé zobrazení formulováno.
+
+Následně se počítají parametry Gaussova konformního zobrazení ($\alpha, u_0, k$), které jsou navázány na referenční rovnoběžku $\varphi_0 = 49{,}5^\circ$. Tyto konstanty pak určují, jak se elipsoid překlápí na mezilehlou Gaussovu kouli o poloměru $R$.
+
+Výsledkem tohoto kroku jsou již souřadnice definované na povrchu Gaussovy koule a délka $v = \alpha \cdot \lambda_{Ferro}$. Tyto souřadnice jsou přeneseny na externí funkci uvTosd, která s využitím polohy kartografického pólu ($u_k \approx 59^\circ 42', v_k \approx 42^\circ 31'$) vypočítá šikmé souřadnice $s$, $d$.
+Závěr zobrazení patří převodu z koule do roviny pomocí Lambertova konformního kuželového zobrazení.
+\begin{equation*}
+\rho = \rho_0 \cdot \left( \frac{\operatorname{tan}(\frac{s_0}{2} + \frac{\pi}{4})}{\operatorname{tan}(\frac{s}{2} + \frac{\pi}{4})} \right)^{\sin s_0}, \qquad \varepsilon = \sin s_0 \cdot d \qquad \rightarrow \qquad \begin{matrix} Y_{JTSK} = \rho \sin \varepsilon \\ X_{JTSK} = \rho \cos \varepsilon \end{matrix}
+\end{equation*}
+
+\subsection*{6. Výpočet meridiánové konvergence}
+Komplexnost algoritmu uzavírá analytický výpočet meridiánové konvergence. Skript vypočítá úhel stáčení poledníků $\xi$ pomocí sinové věty ze sférického trojúhelníku a následně jej odečte od polárního úhlu $\varepsilon$:
+\begin{align*}
+\sin \xi &= \frac{\cos u_k \cdot \sin(\pi - d)}{\cos u} \quad \rightarrow \quad \xi = \operatorname{asin}(\sin \xi) \\
+c_{rad} &= \varepsilon - \xi, \qquad c_{deg} = c_{rad} \cdot \frac{180}{\pi}
+\end{align*}
+Výsledek je programem vypsán ve standardních desetinných stupních společně s rovinnými souřadnicemi a vypočtenou elipsoidickou výškou.
+
+\section*{Výsledky měření a výpočtů}
+K ověření funkčnosti navrženého algoritmu byly využity dva referenční geodetické body zadané v systému WGS84, které skript úspěšně transformoval do systému S-JTSK s určením finální výšky nad Besselovým elipsoidem a stanovením meridiánové konvergence.
+Výsledky výstupu terminálu pro obě provedené iterace jsou přehledně sumarizovány v tabulce \ref{tab_vysledky}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|}
+        \hline
+        Bod & Y [m] & X [m] & Z (Výška $H_{Bes}$) [m] & Konvergence $c$ [$^\circ$] \\
+        \hline \hline
+        Bi27-8 & 742 833,430 & 1 038 621,116 & 239,332 & 7,83898 \\
+        \hline
+        Bi5-21 & 743 779,773 & 1 037 171,351 & 138,635 & 7,85113 \\
+        \hline
+    \end{tabular}
+    \caption{Výsledné 3D souřadnice v S-JTSK a hodnoty meridiánové konvergence definovaných bodů.}
+    \label{tab_vysledky}
+\end{table}
+
+\section*{Závěr a hodnocení}
+Cílem této úlohy bylo realizovat a analyzovat exaktní transformační postup převodu 3D souřadnic ze systému WGS84 do rovinného systému S-JTSK. Vytvořený výpočetní algoritmus úspěšně zohlednil třetí rozměr v podobě elipsoidické výšky, díky čemuž nevznikla polohová chyba při přechodu mezi nestejnorodými elipsoidy, a zároveň umožnil korektní zpětný výpočet výšky nad cílovým Besselovým elipsoidem. Zatímco vstupní elipsoidické výšky nad geocentrickým modelem WGS84 dosahovaly hodnot okolo 283 m, respektive 183 m, výsledné transformované výšky nad lokálním Besselovým elipsoidem vykazují hodnoty výrazně nižší (239 m, respektive 138 m). Tento pokles logicky odráží geometrickou odlišnost a prostorové posunutí obou referenčních těles v oblasti České republiky.
+
+Důležitým výstupem analytické části byl výpočet meridiánové konvergence $c$. Pro testované body na území Prahy (Bi27-8 a Bi5-21) dosáhla konvergence hodnot $7,83898^\circ$, respektive $7,85113^\circ$. Tyto výsledky jsou plně v souladu s teoretickými předpoklady Křovákova zobrazení. Základní poledník tohoto zobrazení (kde je konvergence nulová) leží na východě (přibližně $24^\circ 50'$ východní délky). Hodnoty meridiánové konvergence symetricky rostou směrem k západu. Analýza ukazuje, že natočení obrazu poledníku vůči ose X o téměř $8^\circ$ je vzhledem k poloze Prahy zcela v souladu s realitou. Z hodnot je rovněž patrné, že bod Bi5-21, ležící nepatrně západněji než bod Bi27-8, vykazuje logicky vyšší hodnotu konvergence.
+
+Závěrem lze konstatovat, že naprogramovaný skript představuje analytický nástroj pro provedení kompletního transformačního řetězce geodetických bodů s plným respektováním jejich prostorové povahy.
