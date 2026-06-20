@@ -1,7 +1,7 @@
 from math import *
 from uvtosd import*
 
-def WGSToJTSK (phi_WGS, la_WGS, H_WGS):
+def WGSToJTSK (phi_WGS, la_WGS, H_WGS, Y_ref=None, X_ref=None):
     #WGS84 parameters
     a_WGS = 6378137.00
     b_WGS = 6356752.3142
@@ -34,14 +34,19 @@ def WGSToJTSK (phi_WGS, la_WGS, H_WGS):
     b_Bes = 6356078.963
     e2_Bes = (a_Bes*a_Bes - b_Bes*b_Bes)/(a_Bes*a_Bes)
    
-    #Phi, lam, Bessel
-    la_Bes = atan2(Y_Bes,X_Bes)
-    tan_phi_Bes = Z_Bes / ((1 - e2_Bes) * sqrt(X_Bes**2 + Y_Bes**2))
-    phi_Bes = atan(tan_phi_Bes)
-    
-    #Calcuation of the Z coordinate of the Bessel ellipsoid
-    N_Bes = a_Bes / sqrt(1 - e2_Bes * (sin(phi_Bes))**2)
+    #Browning's formula Bessel ellipsoid
+    la_Bes = atan2(Y_Bes, X_Bes)
     p = sqrt(X_Bes**2 + Y_Bes**2)
+    
+    #Estimation of latitude using Bowring's formula
+    phi_Bes = atan2(Z_Bes, p * (1 - e2_Bes))
+    
+    #Iterative calculation using Bowring's formula
+    for _ in range(5):
+        N_Bes = a_Bes / sqrt(1 - e2_Bes * (sin(phi_Bes))**2)
+        phi_Bes = atan2(Z_Bes + e2_Bes * N_Bes * sin(phi_Bes), p)
+        
+    #Z coordinate of the point on the ellipsoid
     H_Bes = (p / cos(phi_Bes)) - N_Bes
     
     #Shift to Feerro
@@ -91,6 +96,13 @@ def WGSToJTSK (phi_WGS, la_WGS, H_WGS):
     #Conversion of c to degrees
     c_deg = c_rad * 180 / pi
     
+    if Y_ref is None or X_ref is None:
+        dx = x_jtsk - X_ref
+        dy = y_jtsk - Y_ref
+        dp = sqrt(dx**2 + dy**2)
+        print(f"Diviations: dY = {dy}, dX = {dx}")
+        print(f"Acumulated error: {dp}")
+    
     print(y_jtsk, x_jtsk)
     print ("Meridian convergence: ", c_deg)
     print ("Height on ellipsoid: ", H_Bes)
@@ -107,13 +119,17 @@ if choice == "1":
     phi_WGS = 50.126547 * pi/180
     la_WGS = 14.412551 * pi/180
     H_WGS = 283.627
-    WGSToJTSK (phi_WGS, la_WGS, H_WGS)
+    Y_ref_1 = 742833.51
+    X_ref_1 = 1038621.90
+    WGSToJTSK (phi_WGS, la_WGS, H_WGS, Y_ref_1, X_ref_1)
 elif choice == "2":
     #Input coordinates 2 Bi5-21
     phi_WGS = 50.138301 * pi/180
     la_WGS = 14.396669 * pi/180
     H_WGS = 183.319
-    WGSToJTSK (phi_WGS, la_WGS, H_WGS)
+    Y_ref_2 = 741403.90
+    X_ref_2 = 1039773.35
+    WGSToJTSK (phi_WGS, la_WGS, H_WGS, Y_ref_2, X_ref_2)
 elif choice == "3":
     print("Enter custom coordinates:")
     try:
